@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{club_data[0][0]['team'] }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0 auto;
+            max-width: 1000px;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 100%;
+            margin: auto;
+            overflow: hidden;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: {{club_data[0][0]['teamPrimaryColor']}} 5px solid;
+            text-align: center;
+        }
+        header img {
+            display: block;
+            margin: 20px auto;
+        }
+        header h1 {
+            margin: 0;
+            font-family: 'Open Sans', sans-serif;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            font-family: 'Open Sans', sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #35424a;
+            color: white;
+        }
+        footer {
+            background: #35424a;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+        footer p {
+            margin: 0;
+        }
+        .highlight {
+            background-color: #f0e68c; /* Light golden color */
+        }
+        .whiteColor{
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        #goalsChart,
+        #resultsChart,
+        #performanceChart,
+        #comparativeChart {
+            width:  50px; /* Adjust width as needed */
+            height: 500px; /* Adjust height as needed */
+        }
+        @media (max-width: 600px) {
+            header, .container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="{{ club_data[0][0]['imageLink'] }}" alt="{{ club_data[0][0]['team'] }} Logo" width="150">
+        <h1 class="whiteColor">{{ club_data[0][0]['team'] }} Season Performance Overview<br>{{ club_data[0][0]['season'] }}</h1>
+    </header>
+    <div class="container">
+        <h2>1. Overview of the Season</h2>
+        <p><strong>League:</strong> {{club_data[0][0]['tournament']}}</p>
+        <p><strong>Season Duration:</strong> {{club_data[0][0]['season']}}</p>
+        <p><strong>Number of Teams:</strong> {{club_data[0][0]['N_teams']}}</p>
+        <p><strong>League position:</strong> {{club_data[0][0]['position']}}</p>
+        <h2>2. Team Performance</h2>
+        <h3>Final Standings</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Position</th>
+                    <th>Team</th>
+                    <th>Points</th>
+                    <th>Wins</th>
+                    <th>Draws</th>
+                    <th>Losses</th>
+                    <th>Goals Scored</th>
+                    <th>Goals Conceded</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in club_data[1]['performance'] %}
+                <tr {% if team['team']['id'] == club_data[0][0]['team_id']  %} class="highlight" {% endif %}>
+                    <td>{{ team['position'] }} </td>
+                    <td>{{ team['team']['name']}}</td>
+                    <td>{{ team['points'] }}</td>
+                    <td>{{ team['wins'] }}</td>
+                    <td>{{ team['draws'] }}</td>
+                    <td>{{ team['losses'] }}</td>
+                    <td>{{ team['scoresFor'] }}</td>
+                    <td>{{ team['scoresAgainst'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>3. Player Performance</h2>
+        <h3>Top Scorers</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Goals</th>
+                    <th>Goals per Game</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in club_data[2]['topGoals'] %}
+                <tr>
+                    <td>{{ player['player']['name'] }}</td>
+                    <td>{{ player['statistics']['goals'] }}</td>
+                    <td>{{ "%.1f" | format(player['statistics']['goals']/ player['statistics']['appearances']) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Assists Leaders</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Assists</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in club_data[2]['topAssists'] %}
+                <tr>
+                    <td>{{ player['player']['name'] }}</td>
+                    <td>{{ player['statistics']['assists'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Key Players</h3>
+        <h4>{{club_data[2]['key_players']['player_1']['name']}}</h4>
+        <p>Goals: {{ club_data[2]['key_players']['player_1']['goal'] }}</p>
+        <p>Assists: {{ club_data[2]['key_players']['player_1']['assists'] }}</p>
+        <p>Key Passes per Game: {{ club_data[2]['key_players']['player_1']['passes'] }}</p>
+        <p>Dribbles per Game: {{ club_data[2]['key_players']['player_1']['Dribbles'] }}</p>
+    
+        <h4>{{club_data[2]['key_players']['player_2']['name']}}</h4>
+        <p>Goals: {{ club_data[2]['key_players']['player_2']['goal'] }}</p>
+        <p>Assists: {{ club_data[2]['key_players']['player_2']['assists'] }}</p>
+        <p>Key Passes per Game: {{ club_data[2]['key_players']['player_2']['passes'] }}</p>
+        <p>Dribbles per Game: {{ club_data[2]['key_players']['player_2']['Dribbles'] }}</p>
+
+        <h2>4. Match Analysis</h2>
+        <h3>{{ club_data[3]['key_match']['tournament'] }}</h3>
+        <h4>{{ club_data[3]['key_match']['home'] }} {{ club_data[3]['key_match']['homeScore'] }}-{{ club_data[3]['key_match']['awayScore'] }} {{ club_data[3]['key_match']['awayTeam'] }}</h4>
+        <h3>Match Statistics</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Statistic</th>
+                    <th>{{ club_data[3]['key_match']['home'] }}</th>
+                    <th>{{ club_data[3]['key_match']['awayTeam'] }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in club_data[3]['stats'] %}
+                <tr>
+                    <td>{{ player['name'] }}</td>
+                    <td>{{ player['home'] }}</td>
+                    <td>{{ player['away'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>5. Statistical Analysis</h2>
+        <h3>Team Statistics</h3>
+        <p>Average Possession: {{ club_data[4]['TeamStatistics']['AvgPossession'] }}</p>
+        <p>Passing Accuracy: {{ club_data[4]['TeamStatistics']['PassingAccuracy'] }}</p>
+        <p>Total Shots: {{ club_data[4]['TeamStatistics']['TotalShots'] }}</p>
+        <p>Shots on Target: {{ club_data[4]['TeamStatistics']['ShotsOnTarget'] }}</p>
+        <p>Fouls Committed: {{ club_data[4]['TeamStatistics']['FoulsCommitted'] }}</p>
+        <p>Yellow Cards: {{ club_data[4]['TeamStatistics']['YellowCards'] }}</p>
+        <p>Red Cards: {{ club_data[4]['TeamStatistics']['RedCards'] }}</p>
+
+        <h3>Defensive and Offensive Metrics</h3>
+        <p>Goals per Game: {{ club_data[4]['Def&OffMetrics']['GoalsperGame'] }}</p>
+        <p>Clean Sheets: {{ club_data[4]['Def&OffMetrics']['CleanSheets'] }}</p>
+        <p>Average Goals Conceded per Game: {{ club_data[4]['Def&OffMetrics']['AvgGoalsConcededperGame'] }}</p>
+        <p>Tackles per Game: {{ club_data[4]['Def&OffMetrics']['TacklesperGame'] }}</p>
+        <p>Clearances per Game: {{ club_data[4]['Def&OffMetrics']['ClearancesperGame'] }}</p>
+
+        <h3>Comparative Analysis</h3>
+        <table>
+            <tr>
+                <th>Metric</th>
+                <th>{{ club_data[0][0]['team'] }}</th>
+                <th>League Average</th>
+            </tr>
+            <tr>
+                <td>Goals Scored</td>
+                <td>{{ club_data[4]['ComparativeAnalysis']['teamStatisticalAnalysis']['goalsScored'] }}</td>
+                <td>{{ club_data[4]['ComparativeAnalysis']['leagueStatisticalAnalysis']['goalsScored'] }}</td>
+            </tr>
+            <tr>
+                <td>Goals Conceded</td>
+                <td>{{ club_data[4]['ComparativeAnalysis']['teamStatisticalAnalysis']['goalsConceded'] }}</td>
+                <td>{{ club_data[4]['ComparativeAnalysis']['leagueStatisticalAnalysis']['goalsConceded'] }}</td>
+            </tr>
+            <tr>
+                <td>Yellow Cards</td>
+                <td>{{ club_data[4]['ComparativeAnalysis']['teamStatisticalAnalysis']['yellowCards'] }}</td>
+                <td>{{ club_data[4]['ComparativeAnalysis']['leagueStatisticalAnalysis']['yellowCards'] }}</td>
+            </tr>
+            <tr>
+                <td>Red Cards</td>
+                <td>{{ club_data[4]['ComparativeAnalysis']['teamStatisticalAnalysis']['redCards'] }}</td>
+                <td>{{ club_data[4]['ComparativeAnalysis']['leagueStatisticalAnalysis']['redCards'] }}</td>
+            </tr>
+        </table>
+    </div>
+    <footer>
+        <p>© {{ year }} {{ club_data[0][0]['team'] }}. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
